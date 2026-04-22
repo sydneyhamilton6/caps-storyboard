@@ -56,7 +56,7 @@ function buildCheckboxList(tags, name, selectedIds = []) {
   return tags.map(t => `
     <label class="check-item" for="${name}-${t.id}">
       <input type="checkbox" id="${name}-${t.id}" name="${name}" value="${t.id}" ${selectedIds.includes(t.id) ? 'checked' : ''}>
-      <span class="check-item__label">${t.icon ? t.icon + ' ' : ''}${t.label}</span>
+      <span class="check-item__label">${t.label}</span>
     </label>`).join('');
 }
 
@@ -64,7 +64,7 @@ function buildRadioList(tags, name, selectedId = null) {
   return tags.map(t => `
     <label class="check-item" for="${name}-${t.id}">
       <input type="radio" id="${name}-${t.id}" name="${name}" value="${t.id}" ${selectedId === t.id ? 'checked' : ''} required>
-      <span class="check-item__label">${t.icon ? t.icon + ' ' : ''}${t.label}</span>
+      <span class="check-item__label">${t.label}</span>
     </label>`).join('');
 }
 

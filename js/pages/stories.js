@@ -53,7 +53,7 @@ function renderGrid(stories) {
   if (!stories.length) {
     grid.innerHTML = `
       <div class="empty-state" style="grid-column:1/-1">
-        <div class="empty-state__icon">🕊️</div>
+        <div class="empty-state__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="40" height="40"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
         <div class="empty-state__title">No stories found</div>
         <p class="empty-state__text">Try adjusting your filters or search terms.</p>
       </div>`;
