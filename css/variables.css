@@ -1,0 +1,62 @@
+:root {
+  /* Brand colors */
+  --color-paper: #FDFBF7;
+  --color-ink: #2B2623;
+  --color-muted: #6E6862;
+  --color-line: #E8E1D7;
+  --color-surface: #FFFFFF;
+  --color-brand-teal: #2F6F6E;
+  --color-brand-teal-deep: #1F4F4E;
+  --color-brand-warm: #C97B63;
+  --color-brand-warm-soft: #F3DFD3;
+  --color-brand-sage: #A8B5A0;
+  --color-brand-gold: #C89B4A;
+
+  /* Consent tier */
+  --color-consent-public: #22c55e;
+  --color-consent-public-bg: #f0fdf4;
+  --color-consent-public-text: #15803d;
+  --color-consent-anonymous: #eab308;
+  --color-consent-anonymous-bg: #fefce8;
+  --color-consent-anonymous-text: #a16207;
+  --color-consent-private: #ef4444;
+  --color-consent-private-bg: #fef2f2;
+  --color-consent-private-text: #b91c1c;
+
+  /* Tone */
+  --color-tone-inspirational: #f59e0b;
+  --color-tone-volunteer: #60a5fa;
+  --color-tone-sad: #94a3b8;
+
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Nunito Sans', system-ui, sans-serif;
+
+  /* Spacing (4px base) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-24: 96px;
+
+  /* Corner radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-soft: 0 1px 2px rgba(43,38,35,0.04), 0 4px 16px rgba(43,38,35,0.06);
+  --shadow-lift: 0 8px 28px rgba(43,38,35,0.12);
+
+  /* Transitions */
+  --ease-ui: 250ms ease;
+  --ease-sheet: 320ms cubic-bezier(.2,.8,.2,1);
+  --ease-enter: 350ms ease;
+}

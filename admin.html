@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Grief Support Hub</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/pages/admin.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <div id="nav-root"></div>
+
+    <main class="page-content" id="main-content">
+      <div class="container">
+
+        <div class="admin-header">
+          <div>
+            <p class="eyebrow eyebrow--teal" style="margin-bottom:8px">Internal Dashboard</p>
+            <h1 style="font-family:var(--font-display);font-size:1.75rem;font-weight:600">Admin</h1>
+          </div>
+          <a href="submit.html" class="btn btn--primary">+ Submit Story</a>
+        </div>
+
+        <!-- TODO(v2-auth): Insert Supabase Auth check here. Redirect non-staff users to login. -->
+        <div class="admin-notice" role="alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span><strong>v1 — Open access.</strong> This page is accessible to anyone with the URL. Authentication will be added in v2.</span>
+        </div>
+
+        <!-- Stats -->
+        <div class="admin-stats">
+          <div class="admin-stat-card">
+            <div class="admin-stat-card__value" id="stat-total">—</div>
+            <div class="admin-stat-card__label">Total Stories</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-card__value" id="stat-public" style="color:var(--color-consent-public-text)">—</div>
+            <div class="admin-stat-card__label">Fully Public</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-card__value" id="stat-anon" style="color:var(--color-consent-anonymous-text)">—</div>
+            <div class="admin-stat-card__label">Anonymous</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-card__value" id="stat-private" style="color:var(--color-consent-private-text)">—</div>
+            <div class="admin-stat-card__label">Strictly Private</div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+          <div class="search-wrap" style="flex:1;min-width:200px">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <circle cx="9" cy="9" r="6"/><path d="M15 15l-3.5-3.5" stroke-linecap="round"/>
+            </svg>
+            <input type="search" id="admin-search" class="search-input" placeholder="Search stories…" aria-label="Search stories">
+          </div>
+
+          <select id="filter-tier" class="sort-select" aria-label="Filter by consent tier">
+            <option value="">All tiers</option>
+            <option value="1">Fully Public</option>
+            <option value="2">Anonymous</option>
+            <option value="3">Strictly Private</option>
+          </select>
+
+          <select id="filter-status" class="sort-select" aria-label="Filter by status">
+            <option value="">All statuses</option>
+            <option value="published">Published</option>
+            <option value="archived">Archived</option>
+          </select>
+
+          <span style="font-size:0.875rem;color:var(--color-muted);margin-left:auto" id="row-count" aria-live="polite"></span>
+        </div>
+
+        <!-- Bulk action bar -->
+        <div class="bulk-action-bar" id="bulk-bar" style="display:none">
+          <span class="bulk-action-bar__count" id="bulk-count"></span>
+          <button class="btn btn--danger btn--sm" id="bulk-delete-btn">Delete selected</button>
+          <button class="btn btn--ghost btn--sm" id="bulk-clear-btn" onclick="document.getElementById('select-all').checked=false;document.querySelectorAll('.row-check').forEach(c=>c.checked=false);document.getElementById('bulk-bar').style.display='none'">Clear</button>
+        </div>
+
+        <!-- Table -->
+        <div class="data-table-wrap">
+          <table class="data-table" aria-label="All stories">
+            <thead>
+              <tr>
+                <th style="width:36px"><input type="checkbox" id="select-all" class="data-table__checkbox" aria-label="Select all"></th>
+                <th>Story</th>
+                <th>Submitter</th>
+                <th>Consent</th>
+                <th>Tone</th>
+                <th>Submitted</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="story-tbody">
+              <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--color-muted)">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer__inner">
+          <span class="footer__copy">© 2026 Collective for Hope — Internal Use Only</span>
+          <nav class="footer__links" aria-label="Footer navigation">
+            <a href="index.html"   class="footer__link">Home</a>
+            <a href="stories.html" class="footer__link">Stories</a>
+            <a href="submit.html"  class="footer__link">Submit</a>
+          </nav>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="js/pages/admin.js"></script>
+</body>
+</html>

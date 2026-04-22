@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Stories — Grief Support Hub</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/pages/stories.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <div id="nav-root"></div>
+
+    <main class="page-content" id="main-content">
+      <div class="container">
+
+        <div class="page-hero">
+          <p class="eyebrow eyebrow--teal page-hero__eyebrow">Collective for Hope</p>
+          <h1 class="page-hero__title">All Stories</h1>
+          <p class="page-hero__subtitle">Browse and filter the full collection of grief testimonials.</p>
+        </div>
+
+        <div id="filter-root"></div>
+        <div id="active-filter-root"></div>
+
+        <div class="stories-toolbar">
+          <span class="stories-toolbar__count" id="story-count" aria-live="polite"></span>
+        </div>
+
+        <div class="grid-3" id="story-grid" aria-label="Story list">
+          <!-- populated by JS -->
+        </div>
+
+      </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer__inner">
+          <span class="footer__copy">© 2026 Collective for Hope — Internal Use Only</span>
+          <nav class="footer__links" aria-label="Footer navigation">
+            <a href="index.html"  class="footer__link">Home</a>
+            <a href="submit.html" class="footer__link">Submit</a>
+            <a href="admin.html"  class="footer__link">Admin</a>
+          </nav>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="js/pages/stories.js"></script>
+</body>
+</html>

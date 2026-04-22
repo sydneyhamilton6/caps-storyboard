@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grief Support Hub — Collective for Hope</title>
+  <meta name="description" content="Internal staff portal for grief and loss testimonials — Collective for Hope.">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/pages/home.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <div id="nav-root"></div>
+
+    <main class="page-content" id="main-content">
+      <div class="container">
+
+        <!-- Hero -->
+        <section class="home-hero" aria-labelledby="home-heading">
+          <p class="eyebrow eyebrow--teal home-hero__eyebrow">Collective for Hope — Internal</p>
+          <h1 class="home-hero__title" id="home-heading">
+            Every story of <em>grief</em><br>deserves a home.
+          </h1>
+          <p class="home-hero__subtitle">
+            A dignified archive of personal testimonials — collected, tagged, and kept with care
+            for the staff who support people through loss.
+          </p>
+
+          <div class="home-hero__search">
+            <div class="search-wrap">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <circle cx="9" cy="9" r="6"/><path d="M15 15l-3.5-3.5" stroke-linecap="round"/>
+              </svg>
+              <input
+                type="search"
+                id="hero-search"
+                class="search-input"
+                placeholder="Search all stories…"
+                aria-label="Search all stories"
+                style="padding-top:14px;padding-bottom:14px;font-size:1rem"
+              >
+            </div>
+          </div>
+
+          <div class="home-stats" id="stats-bar" aria-label="Story statistics">
+            <div class="stat"><span class="stat__value skeleton" style="width:40px;height:28px;display:inline-block"></span><span class="stat__label">Loading…</span></div>
+          </div>
+        </section>
+
+        <!-- Grief Type folders -->
+        <section class="folder-section" aria-labelledby="grief-heading">
+          <div class="folder-section__title">
+            <span class="folder-section__icon" aria-hidden="true">🫂</span>
+            <h2 id="grief-heading" class="section-title">Grief Type</h2>
+          </div>
+          <div class="grid-4" id="grief-folders" aria-label="Browse by grief type">
+            <!-- populated by JS -->
+          </div>
+        </section>
+
+        <!-- Tone folders -->
+        <section class="folder-section" aria-labelledby="tone-heading">
+          <div class="folder-section__title">
+            <span class="folder-section__icon" aria-hidden="true">✨</span>
+            <h2 id="tone-heading" class="section-title">Story Tone</h2>
+          </div>
+          <div class="grid-3" id="tone-folders" aria-label="Browse by tone">
+            <!-- populated by JS -->
+          </div>
+        </section>
+
+        <!-- Employee folders -->
+        <section class="folder-section" aria-labelledby="employee-heading">
+          <div class="folder-section__title">
+            <span class="folder-section__icon" aria-hidden="true">👤</span>
+            <h2 id="employee-heading" class="section-title">By Employee</h2>
+          </div>
+          <div class="grid-4" id="employee-folders" aria-label="Browse by employee">
+            <!-- populated by JS -->
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer__inner">
+          <span class="footer__copy">© 2026 Collective for Hope — Internal Use Only</span>
+          <nav class="footer__links" aria-label="Footer navigation">
+            <a href="stories.html" class="footer__link">All Stories</a>
+            <a href="submit.html"  class="footer__link">Submit</a>
+            <a href="admin.html"   class="footer__link">Admin</a>
+          </nav>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="js/pages/home.js"></script>
+</body>
+</html>

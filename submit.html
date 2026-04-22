@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit a Story — Grief Support Hub</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/pages/submit.css">
+</head>
+<body>
+  <div class="page-wrapper">
+    <div id="nav-root"></div>
+
+    <main class="page-content" id="main-content">
+      <div class="container">
+
+        <div class="page-hero" style="max-width:840px;margin-left:auto;margin-right:auto">
+          <p class="eyebrow eyebrow--teal page-hero__eyebrow">Collective for Hope</p>
+          <h1 class="page-hero__title" id="page-title">Submit a Story</h1>
+          <p class="page-hero__subtitle">Share a testimonial from someone who has experienced loss. All stories are handled with care.</p>
+        </div>
+
+        <div id="form-root">
+          <form id="submit-form" novalidate>
+            <div class="submit-layout">
+
+              <div class="submit-form-section">
+
+                <!-- Section 1: Story Content -->
+                <div class="form-panel">
+                  <h2 class="form-panel__title">Story Content</h2>
+                  <div class="form-panel__fields">
+
+                    <div class="form-group">
+                      <label class="form-label" for="title">Title <span style="font-weight:400;color:var(--color-muted)">(optional)</span></label>
+                      <input type="text" id="title" name="title" class="form-input" placeholder="A short title for this story…" maxlength="120">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label form-label--required" for="body-input">Story</label>
+                      <textarea id="body-input" name="body" class="form-textarea" placeholder="Write or paste the full story here…" required minlength="20" rows="10"></textarea>
+                      <span class="form-char-count" id="char-count">0 characters (min 20)</span>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="submitter_name">Submitter Name <span style="font-weight:400;color:var(--color-muted)">(optional)</span></label>
+                      <input type="text" id="submitter_name" name="submitter_name" class="form-input" placeholder="Full name of the person who shared this">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="submitter_email">Submitter Email <span style="font-weight:400;color:var(--color-muted)">(optional — internal only, never displayed)</span></label>
+                      <input type="email" id="submitter_email" name="submitter_email" class="form-input" placeholder="name@example.com">
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Section 2: Tags -->
+                <div class="form-panel">
+                  <h2 class="form-panel__title">Tags</h2>
+                  <div class="form-panel__fields">
+
+                    <div class="form-group">
+                      <p class="form-label">Grief Type <span style="font-weight:400;color:var(--color-muted)">(select all that apply)</span></p>
+                      <div class="check-group" id="grief-list">
+                        <!-- populated by JS -->
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <p class="form-label form-label--required">Tone <span style="font-weight:400;color:var(--color-muted)">(select exactly one)</span></p>
+                      <div class="check-group" id="tone-list">
+                        <!-- populated by JS -->
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <p class="form-label">Employee <span style="font-weight:400;color:var(--color-muted)">(optional — who was involved?)</span></p>
+                      <div class="check-group" id="employee-list">
+                        <p class="form-hint">No employees on record yet.</p>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Section 3: Consent -->
+                <div class="form-panel">
+                  <h2 class="form-panel__title">Consent Tier</h2>
+                  <p class="form-hint" style="margin-bottom:var(--sp-4)">Choose how this story may be shared. When in doubt, select Anonymous.</p>
+                  <div class="consent-card-group" id="consent-cards">
+                    <!-- populated by JS -->
+                  </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="submit-actions">
+                  <button type="submit" class="btn btn--primary" id="submit-btn">Submit story</button>
+                  <a href="stories.html" class="btn btn--ghost">Cancel</a>
+                </div>
+
+              </div><!-- /submit-form-section -->
+
+              <!-- Sidebar -->
+              <aside class="submit-sidebar" aria-label="Submission checklist">
+                <div class="submit-sidebar__panel">
+                  <p class="submit-sidebar__title">What you'll need</p>
+                  <div class="submit-sidebar__item">
+                    <span class="submit-sidebar__field">Story</span>
+                    <span class="submit-sidebar__value">At least 20 characters of text</span>
+                  </div>
+                  <div class="submit-sidebar__item">
+                    <span class="submit-sidebar__field">Tone</span>
+                    <span class="submit-sidebar__value">One required — Inspirational, Volunteer, or Sad</span>
+                  </div>
+                  <div class="submit-sidebar__item">
+                    <span class="submit-sidebar__field">Consent tier</span>
+                    <span class="submit-sidebar__value">Required — determines who can see this story</span>
+                  </div>
+                  <div class="submit-sidebar__item">
+                    <span class="submit-sidebar__field">Everything else</span>
+                    <span class="submit-sidebar__value">Optional — name, email, grief type, employee</span>
+                  </div>
+                </div>
+              </aside>
+
+            </div><!-- /submit-layout -->
+          </form>
+        </div><!-- /form-root -->
+
+      </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+      <div class="container">
+        <div class="footer__inner">
+          <span class="footer__copy">© 2026 Collective for Hope — Internal Use Only</span>
+          <nav class="footer__links" aria-label="Footer navigation">
+            <a href="index.html"   class="footer__link">Home</a>
+            <a href="stories.html" class="footer__link">Stories</a>
+          </nav>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="js/pages/submit.js"></script>
+</body>
+</html>
