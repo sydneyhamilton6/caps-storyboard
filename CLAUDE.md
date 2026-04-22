@@ -1,9 +1,7 @@
 # CLAUDE.md — Project Configuration for Claude Code
 
 ## Project Identity
-- **Gamertag / Repo Owner:** tmank5
-- **Organization:** AIML-1870-2026
-- **Live Base URL:** https://aiml-1870-2026.github.io/tmank5/
+- **Live Base URL:** https://aiml-1870-2026.github.io/sydneyhamilton6/
 
 ---
 
@@ -78,7 +76,7 @@ When I say **"Show my URLs"** or **"Where's my stuff?"**:
 1. List all subfolders containing an `index.html`.
 2. For each, show the live URL:
    ```
-   https://aiml-1870-2026.github.io/tmank5/[AssignmentName]/
+   https://aiml-1870-2026.github.io/sydneyhamilton6
    ```
 
 ---
@@ -95,18 +93,18 @@ When I say **"Merge to main"** or **"Go live"**:
    git checkout dev
    ```
 3. Return to `dev` immediately after — all future work continues there.
-4. Confirm the live URL is updated: `https://aiml-1870-2026.github.io/tmank5/`
+4. Confirm the live URL is updated: `https://aiml-1870-2026.github.io/sydneyhamilton6/`
 
 ---
 
 ## Coding Standards
 
-- **Single-file preferred:** Keep projects self-contained in `index.html` unless complexity requires splitting.
 - **No PII:** No real names, emails, or identifying info in code or comments.
 - **Asset naming:** lowercase, hyphen-separated (e.g., `particle-system.js`, `bg-gradient.png`).
 - **Folder naming:** Descriptive names strongly preferred (e.g., `Julia-Set-Explorer`, not `assignment3`).
 - **Valid HTML5:** Always use `<!DOCTYPE html>` and a proper `<meta charset="UTF-8">`.
-- **No dead code:** Don't leave commented-out blocks of old logic — remove it or track it in git history.
+- **No dead code:** Don't leave commented-out blocks of old logic — remove it or track it in git history.\
+- **API Keys:** Before you push always search all files for API keys.
 
 ---
 
@@ -116,3 +114,4 @@ When I say **"Merge to main"** or **"Go live"**:
 - Commit API keys, secrets, or tokens.
 - Assume a folder is the repo root — always verify `.git` is present.
 - Create nested git repos (no `git init` inside subfolders).
+- Commit .env files
