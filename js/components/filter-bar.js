@@ -3,7 +3,6 @@ import { debounce, setParam, getParams } from '../utils.js';
 export function renderFilterBar(container, { tags, filters, onChange }) {
   const tones      = tags.filter(t => t.category === 'tone');
   const griefTypes = tags.filter(t => t.category === 'grief_type');
-  const employees  = tags.filter(t => t.category === 'employee');
 
   function chip(key, value, label, current) {
     const active = current === value ? ' filter-chip--active' : '';
@@ -22,7 +21,7 @@ export function renderFilterBar(container, { tags, filters, onChange }) {
       </div>
 
       <div class="filter-bar__group">
-        ${tones.map(t => chip('tone', t.value, `${t.icon || ''} ${t.label}`, filters.tone)).join('')}
+        ${tones.map(t => chip('tone', t.value, t.label, filters.tone)).join('')}
       </div>
 
       <div class="filter-bar__group">
@@ -37,7 +36,7 @@ export function renderFilterBar(container, { tags, filters, onChange }) {
     const section = document.createElement('div');
     section.className = 'filter-bar__group';
     section.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;';
-    section.innerHTML = griefTypes.map(t => chip('grief_type', t.value, `${t.icon || ''} ${t.label}`, filters.grief_type)).join('');
+    section.innerHTML = griefTypes.map(t => chip('grief_type', t.value, t.label, filters.grief_type)).join('');
     container.querySelector('.filter-bar').appendChild(section);
   }
 
@@ -47,12 +46,10 @@ export function renderFilterBar(container, { tags, filters, onChange }) {
   }, 320);
 
   container.querySelector('#search-input')?.addEventListener('input', e => debouncedSearch(e.target.value));
-
   container.querySelector('#sort-select')?.addEventListener('change', e => {
     setParam('sort', e.target.value);
     onChange();
   });
-
   container.querySelectorAll('.filter-chip').forEach(btn => {
     btn.addEventListener('click', () => {
       setParam(btn.dataset.key, btn.dataset.value);
