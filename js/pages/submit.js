@@ -162,9 +162,23 @@ async function init() {
       return;
     }
 
-    const griefIds    = [...form.querySelectorAll('input[name="grief_type"]:checked')].map(i => i.value);
-    const employeeIds = [...form.querySelectorAll('input[name="employee"]:checked')].map(i => i.value);
-    const tagIds      = [toneId, ...griefIds, ...employeeIds];
+    const griefIds = [...form.querySelectorAll('input[name="grief_type"]:checked')].map(i => i.value);
+
+    const employeeName = form.employee_name.value.trim();
+    let employeeTagId = null;
+    if (employeeName) {
+      const slug = 'employee_' + employeeName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+      const { data: existing } = await supabase.from('tags').select('id').eq('category', 'employee').eq('value', slug).maybeSingle();
+      if (existing) {
+        employeeTagId = existing.id;
+      } else {
+        const { data: newTag, error: tagErr } = await supabase.from('tags').insert({ category: 'employee', value: slug, label: employeeName }).select('id').single();
+        if (tagErr) throw tagErr;
+        employeeTagId = newTag.id;
+      }
+    }
+
+    const tagIds = [toneId, ...griefIds, ...(employeeTagId ? [employeeTagId] : [])];
 
     const fields = {
       title:            form.title.value.trim() || null,
