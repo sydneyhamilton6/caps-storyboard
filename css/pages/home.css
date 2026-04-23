@@ -13,6 +13,7 @@
   font-weight: 600;
   line-height: 1.1;
   margin-bottom: var(--sp-4);
+  font-variation-settings: 'WONK' 0;
 }
 
 .home-hero__title em {
@@ -64,4 +65,17 @@
 
 .folder-section__icon {
   font-size: 1.1rem;
+}
+
+.folder-section__icon--svg {
+  font-size: 0;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.folder-section__icon--svg svg {
+  width: 22px;
+  height: 22px;
+  display: block;
 }

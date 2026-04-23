@@ -145,7 +145,7 @@
   border: 1px solid var(--color-line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
-  transition: box-shadow var(--ease-ui), border-color var(--ease-ui), transform var(--ease-ui);
+  transition: box-shadow var(--ease-ui), border-color var(--ease-ui), transform var(--ease-ui), opacity var(--ease-ui);
   text-decoration: none;
   color: inherit;
   cursor: pointer;
@@ -155,6 +155,25 @@
   box-shadow: var(--shadow-lift);
   border-color: var(--color-brand-teal);
   color: inherit;
+}
+
+/* Grief type cards: dandelion border + drop shadow */
+#grief-folders .folder-card {
+  border-color: rgba(195, 150, 30, 0.65);
+  border-width: 1.5px;
+  box-shadow: 0 4px 14px rgba(195, 150, 30, 0.18), var(--shadow-soft);
+}
+
+/* On hover: hovered card pops, siblings fade */
+#grief-folders:has(.folder-card:hover) .folder-card:not(:hover) {
+  opacity: 0.45;
+}
+
+#grief-folders .folder-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(47, 111, 110, 0.2), var(--shadow-lift);
+  border-color: var(--color-brand-teal);
+  opacity: 1;
 }
 
 .folder-card__icon {
@@ -167,6 +186,18 @@
 .folder-card__icon svg {
   width: 100%;
   height: 100%;
+}
+
+.folder-card__icon--svg {
+  font-size: 0;
+  width: 36px;
+  height: 36px;
+}
+
+.folder-card__icon--svg svg {
+  width: 36px;
+  height: 36px;
+  display: block;
 }
 
 .folder-card__name {
