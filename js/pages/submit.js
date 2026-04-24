@@ -8,7 +8,7 @@ const MIN_BODY = 20;
 async function fetchForEdit(id) {
   const { data, error } = await supabase
     .from('testimonials')
-    .select('*, testimonial_tags(tag_id)')
+    .select('*, testimonial_tags(tag_id, tags(category, label))')
     .eq('id', id)
     .single();
   if (error) throw error;
@@ -83,7 +83,7 @@ function showConfirmation(storyId) {
       </p>
       <div class="confirm-screen__actions">
         <a href="story.html?id=${storyId}" class="btn btn--primary">View story</a>
-        <a href="submit.html" class="btn btn--ghost">Submit another</a>
+        <a href="index.html" class="btn btn--ghost">Submit another</a>
       </div>
     </div>`;
 }
@@ -95,10 +95,17 @@ async function init() {
   const editId  = params.get('id');
   const isEdit  = params.get('edit') === 'true' && editId;
 
-  const [tags, tiers] = await Promise.all([loadTags(), loadConsentTiers()]);
-  const griefTags    = tags.filter(t => t.category === 'grief_type');
-  const toneTags     = tags.filter(t => t.category === 'tone');
-  const employeeTags = tags.filter(t => t.category === 'employee');
+  let tags, tiers;
+  try {
+    [tags, tiers] = await Promise.all([loadTags(), loadConsentTiers()]);
+  } catch (err) {
+    console.error('Failed to load form data:', err);
+    document.getElementById('form-root').innerHTML =
+      '<p style="padding:2rem;color:var(--color-muted)">Unable to load the form. Please refresh the page.</p>';
+    return;
+  }
+  const griefTags = tags.filter(t => t.category === 'grief_type');
+  const toneTags  = tags.filter(t => t.category === 'tone');
 
   let existing = null;
   let existingTagIds = [];
@@ -109,17 +116,31 @@ async function init() {
 
   document.getElementById('page-title').textContent = isEdit ? 'Edit Story' : 'Submit a Story';
 
-  document.getElementById('grief-list').innerHTML     = buildCheckboxList(griefTags,    'grief_type', existingTagIds);
-  document.getElementById('tone-list').innerHTML      = buildRadioList(toneTags,        'tone',       existingTagIds.find(id => toneTags.some(t => t.id === id)) || null);
-  document.getElementById('employee-list').innerHTML  = buildCheckboxList(employeeTags, 'employee',   existingTagIds);
-  document.getElementById('consent-cards').innerHTML  = buildConsentCards(tiers);
+  document.getElementById('grief-list').innerHTML    = buildCheckboxList(griefTags, 'grief_type', existingTagIds);
+  document.getElementById('consent-cards').innerHTML = buildConsentCards(tiers);
+
+  if (isEdit) {
+    const selectedToneId = existingTagIds.find(id => toneTags.some(t => t.id === id)) ?? null;
+    const toneSection = document.createElement('div');
+    toneSection.className = 'form-group';
+    toneSection.id = 'tone-section';
+    toneSection.innerHTML = `
+      <p class="form-label">Tone <span style="font-weight:400;color:var(--color-muted)">(select exactly one)</span></p>
+      <div class="check-group">${buildRadioList(toneTags, 'tone', selectedToneId)}</div>`;
+    document.getElementById('grief-list').closest('.form-group').after(toneSection);
+  }
 
   if (existing) {
     const f = document.getElementById('submit-form');
-    f.title.value          = existing.title || '';
-    f.body.value           = existing.body  || '';
-    f.submitter_name.value = existing.submitter_name || '';
+    f.title.value           = existing.title || '';
+    f.body.value            = existing.body  || '';
+    f.submitter_name.value  = existing.submitter_name  || '';
     f.submitter_email.value = existing.submitter_email || '';
+
+    const employeeTag = (existing.testimonial_tags || [])
+      .find(tt => tt.tags?.category === 'employee');
+    if (employeeTag) f.employee_name.value = employeeTag.tags.label;
+
     const tierRadio = f.querySelector(`input[name="consent_tier_id"][value="${existing.consent_tier_id}"]`);
     if (tierRadio) { tierRadio.checked = true; tierRadio.closest('.consent-card')?.classList.add('consent-card--selected'); }
     updateCharCount(existing.body || '');
@@ -156,47 +177,51 @@ async function init() {
       return;
     }
 
-    const toneId = form.querySelector('input[name="tone"]:checked')?.value;
-    if (!toneId) {
+    const toneId = isEdit ? form.querySelector('input[name="tone"]:checked')?.value : null;
+    if (isEdit && !toneId) {
       showToast('Please select a tone.', 'error');
       return;
     }
-
-    const griefIds = [...form.querySelectorAll('input[name="grief_type"]:checked')].map(i => i.value);
-
-    const employeeName = form.employee_name.value.trim();
-    let employeeTagId = null;
-    if (employeeName) {
-      const slug = 'employee_' + employeeName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-      const { data: existing } = await supabase.from('tags').select('id').eq('category', 'employee').eq('value', slug).maybeSingle();
-      if (existing) {
-        employeeTagId = existing.id;
-      } else {
-        const { data: newTag, error: tagErr } = await supabase.from('tags').insert({ category: 'employee', value: slug, label: employeeName }).select('id').single();
-        if (tagErr) throw tagErr;
-        employeeTagId = newTag.id;
-      }
-    }
-
-    const tagIds = [toneId, ...griefIds, ...(employeeTagId ? [employeeTagId] : [])];
-
-    const fields = {
-      title:            form.title.value.trim() || null,
-      body,
-      submitter_name:   form.submitter_name.value.trim()  || null,
-      submitter_email:  form.submitter_email.value.trim() || null,
-      consent_tier_id:  tierId,
-      status:           'published',
-    };
 
     const submitBtn = document.getElementById('submit-btn');
     submitBtn.disabled = true;
     submitBtn.textContent = isEdit ? 'Saving…' : 'Submitting…';
 
     try {
+      const griefIds = [...form.querySelectorAll('input[name="grief_type"]:checked')].map(i => i.value);
+
+      const employeeName = form.employee_name.value.trim();
+      let employeeTagId = null;
+      if (employeeName) {
+        const slug = 'employee_' + employeeName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        const { data: existingTag } = await supabase.from('tags').select('id').eq('category', 'employee').eq('value', slug).maybeSingle();
+        if (existingTag) {
+          employeeTagId = existingTag.id;
+        } else {
+          const { data: newTag, error: tagErr } = await supabase.from('tags').insert({ category: 'employee', value: slug, label: employeeName }).select('id').single();
+          if (tagErr) {
+            console.error('Employee tag insert failed:', tagErr);
+            throw new Error(`Employee tag could not be saved: ${tagErr.message}`);
+          }
+          employeeTagId = newTag.id;
+        }
+      }
+
+      const tagIds = [...(toneId ? [toneId] : []), ...griefIds, ...(employeeTagId ? [employeeTagId] : [])];
+
+      const fields = {
+        title:            form.title.value.trim() || null,
+        body,
+        submitter_name:   form.submitter_name.value.trim()  || null,
+        submitter_email:  form.submitter_email.value.trim() || null,
+        consent_tier_id:  tierId,
+        status:           'published',
+      };
+
       const storyId = await upsert(isEdit ? editId : null, fields, tagIds);
       showConfirmation(storyId);
     } catch (err) {
+      console.error('Submission error:', err);
       showToast('Submission failed. Please try again.', 'error');
       submitBtn.disabled = false;
       submitBtn.textContent = isEdit ? 'Save changes' : 'Submit story';

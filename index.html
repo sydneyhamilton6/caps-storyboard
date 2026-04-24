@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grief Support Hub — Collective for Hope</title>
-  <meta name="description" content="Internal staff portal for grief and loss testimonials — Collective for Hope.">
+  <title>Submit a Story — Grief Support Hub</title>
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/pages/home.css">
+  <link rel="stylesheet" href="css/pages/submit.css">
 </head>
 <body>
   <div class="page-wrapper">
@@ -19,70 +18,105 @@
     <main class="page-content" id="main-content">
       <div class="container">
 
-        <!-- Hero -->
-        <section class="home-hero" aria-labelledby="home-heading">
-          <p class="eyebrow eyebrow--teal home-hero__eyebrow">Collective for Hope — Internal</p>
-          <h1 class="home-hero__title" id="home-heading">
-            Every story of <em>grief</em><br>deserves a home.
-          </h1>
-          <p class="home-hero__subtitle">
-            A dignified archive of personal testimonials — collected, tagged, and kept with care
-            for the staff who support people through loss.
-          </p>
+        <div class="page-hero" style="max-width:840px;margin-left:auto;margin-right:auto">
+          <p class="eyebrow eyebrow--teal page-hero__eyebrow">Collective for Hope</p>
+          <h1 class="page-hero__title" id="page-title">Submit a Story</h1>
+          <p class="page-hero__subtitle">Share a testimonial from someone who has experienced loss. All stories are handled with care.</p>
+        </div>
 
-          <div class="home-hero__search">
-            <div class="search-wrap">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <circle cx="9" cy="9" r="6"/><path d="M15 15l-3.5-3.5" stroke-linecap="round"/>
-              </svg>
-              <input
-                type="search"
-                id="hero-search"
-                class="search-input"
-                placeholder="Search all stories…"
-                aria-label="Search all stories"
-                style="padding-top:14px;padding-bottom:14px;font-size:1rem"
-              >
-            </div>
-          </div>
+        <div id="form-root">
+          <form id="submit-form" novalidate>
+            <div class="submit-layout">
 
-          <div class="home-stats" id="stats-bar" aria-label="Story statistics">
-            <div class="stat"><span class="stat__value skeleton" style="width:40px;height:28px;display:inline-block"></span><span class="stat__label">Loading…</span></div>
-          </div>
-        </section>
+              <div class="submit-form-section">
 
-        <!-- Grief Type folders -->
-        <section class="folder-section" aria-labelledby="grief-heading">
-          <div class="folder-section__title">
-            <span class="folder-section__icon folder-section__icon--svg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#a8c5b5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20 C12 20 3 14 3 8.5 C3 5.4 5.4 3 8.5 3 C10.1 3 11.5 3.8 12 4.3 C12.5 3.8 13.9 3 15.5 3 C18.6 3 21 5.4 21 8.5 C21 14 12 20 12 20Z"/></svg></span>
-            <h2 id="grief-heading" class="section-title">Grief Type</h2>
-          </div>
-          <div class="grid-4" id="grief-folders" aria-label="Browse by grief type">
-            <!-- populated by JS -->
-          </div>
-        </section>
+                <!-- Section 1: Story Content -->
+                <div class="form-panel">
+                  <h2 class="form-panel__title">Story Content</h2>
+                  <div class="form-panel__fields">
 
-        <!-- Tone folders -->
-        <section class="folder-section" aria-labelledby="tone-heading">
-          <div class="folder-section__title">
-            <span class="folder-section__icon folder-section__icon--svg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#d4c4a8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="3" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="21"/><line x1="3" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="21" y2="12"/><line x1="5.6" y1="5.6" x2="7.8" y2="7.8"/><line x1="16.2" y1="16.2" x2="18.4" y2="18.4"/><line x1="18.4" y1="5.6" x2="16.2" y2="7.8"/><line x1="7.8" y1="16.2" x2="5.6" y2="18.4"/></svg></span>
-            <h2 id="tone-heading" class="section-title">Story Tone</h2>
-          </div>
-          <div class="grid-3" id="tone-folders" aria-label="Browse by tone">
-            <!-- populated by JS -->
-          </div>
-        </section>
+                    <div class="form-group">
+                      <label class="form-label" for="title">Title <span style="font-weight:400;color:var(--color-muted)">(optional)</span></label>
+                      <input type="text" id="title" name="title" class="form-input" placeholder="A short title for this story…" maxlength="120">
+                    </div>
 
-        <!-- Employee folders -->
-        <section class="folder-section" aria-labelledby="employee-heading">
-          <div class="folder-section__title">
-            <span class="folder-section__icon folder-section__icon--svg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#c4b5d4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></span>
-            <h2 id="employee-heading" class="section-title">By Employee</h2>
-          </div>
-          <div class="grid-4" id="employee-folders" aria-label="Browse by employee">
-            <!-- populated by JS -->
-          </div>
-        </section>
+                    <div class="form-group">
+                      <label class="form-label form-label--required" for="body-input">Story</label>
+                      <textarea id="body-input" name="body" class="form-textarea" placeholder="Write or paste the full story here…" required minlength="20" rows="10"></textarea>
+                      <span class="form-char-count" id="char-count">0 characters (min 20)</span>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="submitter_name">Submitter Name <span style="font-weight:400;color:var(--color-muted)">(optional)</span></label>
+                      <input type="text" id="submitter_name" name="submitter_name" class="form-input" placeholder="Full name of the person who shared this">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="submitter_email">Submitter Email <span style="font-weight:400;color:var(--color-muted)">(optional — internal only, never displayed)</span></label>
+                      <input type="email" id="submitter_email" name="submitter_email" class="form-input" placeholder="name@example.com">
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Section 2: Tags -->
+                <div class="form-panel">
+                  <h2 class="form-panel__title">Tags</h2>
+                  <div class="form-panel__fields">
+
+                    <div class="form-group">
+                      <p class="form-label">Grief Type <span style="font-weight:400;color:var(--color-muted)">(select all that apply)</span></p>
+                      <div class="check-group" id="grief-list">
+                        <!-- populated by JS -->
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="employee-name">Employee <span style="font-weight:400;color:var(--color-muted)">(optional — who was involved?)</span></label>
+                      <input type="text" id="employee-name" name="employee_name" class="form-input" placeholder="Enter employee name…" maxlength="120">
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Section 3: Consent -->
+                <div class="form-panel">
+                  <h2 class="form-panel__title">Consent Tier</h2>
+                  <p class="form-hint" style="margin-bottom:var(--sp-4)">Choose how this story may be shared. When in doubt, select Anonymous.</p>
+                  <div class="consent-card-group" id="consent-cards">
+                    <!-- populated by JS -->
+                  </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="submit-actions">
+                  <button type="submit" class="btn btn--primary" id="submit-btn">Submit story</button>
+                </div>
+
+              </div><!-- /submit-form-section -->
+
+              <!-- Sidebar -->
+              <aside class="submit-sidebar" aria-label="Submission checklist">
+                <div class="submit-sidebar__panel">
+                  <p class="submit-sidebar__title">What you'll need</p>
+                  <div class="submit-sidebar__item">
+                    <span class="submit-sidebar__field">Story</span>
+                    <span class="submit-sidebar__value">At least 20 characters of text</span>
+                  </div>
+                  <div class="submit-sidebar__item">
+                    <span class="submit-sidebar__field">Consent tier</span>
+                    <span class="submit-sidebar__value">Required — determines who can see this story</span>
+                  </div>
+                  <div class="submit-sidebar__item">
+                    <span class="submit-sidebar__field">Everything else</span>
+                    <span class="submit-sidebar__value">Optional — name, email, grief type, employee</span>
+                  </div>
+                </div>
+              </aside>
+
+            </div><!-- /submit-layout -->
+          </form>
+        </div><!-- /form-root -->
 
       </div>
     </main>
@@ -92,8 +126,8 @@
         <div class="footer__inner">
           <span class="footer__copy">© 2026 Collective for Hope — Internal Use Only</span>
           <nav class="footer__links" aria-label="Footer navigation">
-            <a href="stories.html" class="footer__link">All Stories</a>
-            <a href="submit.html"  class="footer__link">Submit</a>
+            <a href="index.html"   class="footer__link">Submit</a>
+            <a href="stories.html" class="footer__link">Stories</a>
             <a href="admin.html"   class="footer__link">Admin</a>
           </nav>
         </div>
@@ -101,6 +135,6 @@
     </footer>
   </div>
 
-  <script type="module" src="js/pages/home.js"></script>
+  <script type="module" src="js/pages/submit.js"></script>
 </body>
 </html>

@@ -57,7 +57,7 @@ function render(story) {
       <div class="story-detail__tags">${tagBadges}</div>
 
       <div class="story-detail__actions">
-        <a href="submit.html?id=${story.id}&edit=true" class="btn btn--ghost">Edit</a>
+        <a href="index.html?id=${story.id}&edit=true" class="btn btn--ghost">Edit</a>
         <button class="btn btn--danger" id="delete-btn">Delete</button>
       </div>
     </div>`;

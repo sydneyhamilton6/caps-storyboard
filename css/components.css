@@ -157,6 +157,23 @@
   color: inherit;
 }
 
+/* Employee cards: soft purple border */
+#employee-folders .folder-card {
+  border-color: rgba(150, 120, 180, 0.45);
+  border-width: 1.5px;
+}
+
+#employee-folders:has(.folder-card:hover) .folder-card:not(:hover) {
+  opacity: 0.45;
+}
+
+#employee-folders .folder-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(150, 120, 180, 0.9);
+  box-shadow: 0 8px 24px rgba(150, 120, 180, 0.2), var(--shadow-lift);
+  opacity: 1;
+}
+
 /* Grief type cards: dandelion border + drop shadow */
 #grief-folders .folder-card {
   border-color: rgba(195, 150, 30, 0.65);
