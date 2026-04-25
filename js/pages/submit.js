@@ -135,8 +135,20 @@ async function init() {
   document.getElementById('page-title').textContent = isEdit ? 'Edit Story' : 'Submit a Story';
 
   document.getElementById('grief-list').innerHTML    = buildCheckboxList(griefTags, 'grief_type', existingTagIds);
-  document.getElementById('tone-list').innerHTML     = buildRadioList(toneTags, 'tone', existingTagIds.find(id => toneTags.some(t => t.id === id)) ?? null);
   document.getElementById('consent-cards').innerHTML = buildConsentCards(tiers);
+
+  if (isEdit) {
+    const selectedToneId = existingTagIds.find(id => toneTags.some(t => t.id === id)) ?? null;
+    const toneSection = document.createElement('div');
+    toneSection.className = 'form-group';
+    toneSection.innerHTML = `
+      <p class="form-label">Tone <span style="font-weight:400;color:var(--color-muted)">(select exactly one)</span></p>
+      <div class="check-group" id="tone-list">${buildRadioList(toneTags, 'tone', selectedToneId)}</div>
+      <div id="other-tone-wrap" style="display:none;margin-top:0.75rem">
+        <input type="text" id="other-tone-input" class="form-input" placeholder="Please describe the tone…" maxlength="120">
+      </div>`;
+    document.getElementById('grief-list').closest('.form-group').after(toneSection);
+  }
 
   const otherToneTag  = toneTags.find(t => t.value === 'other');
   const otherToneWrap = document.getElementById('other-tone-wrap');
@@ -243,8 +255,8 @@ async function init() {
       return;
     }
 
-    let toneId = form.querySelector('input[name="tone"]:checked')?.value;
-    if (!toneId) {
+    let toneId = isEdit ? form.querySelector('input[name="tone"]:checked')?.value : null;
+    if (isEdit && !toneId) {
       showToast('Please select a tone.', 'error');
       setGroupError(toneEl, true);
       scrollTo(toneEl);
