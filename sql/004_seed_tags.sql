@@ -21,4 +21,5 @@ INSERT INTO tags (category, value, label, sort_order) VALUES
   -- Tones
   ('tone', 'inspirational', 'Inspirational', 10),
   ('tone', 'volunteer',     'Volunteer',     20),
-  ('tone', 'sad',           'Sad',           30);
+  ('tone', 'sad',           'Sad',           30),
+  ('tone', 'other',         'Other',         40);

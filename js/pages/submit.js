@@ -120,6 +120,18 @@ async function init() {
   document.getElementById('tone-list').innerHTML     = buildRadioList(toneTags, 'tone', existingTagIds.find(id => toneTags.some(t => t.id === id)) ?? null);
   document.getElementById('consent-cards').innerHTML = buildConsentCards(tiers);
 
+  const otherToneTag  = toneTags.find(t => t.value === 'other');
+  const otherToneWrap = document.getElementById('other-tone-wrap');
+  if (otherToneTag && otherToneWrap) {
+    const otherToneCheckbox = document.getElementById(`tone-${otherToneTag.id}`);
+    const toggleTone = () => {
+      otherToneWrap.style.display = otherToneCheckbox.checked ? 'block' : 'none';
+      if (!otherToneCheckbox.checked) document.getElementById('other-tone-input').value = '';
+    };
+    otherToneCheckbox?.addEventListener('change', toggleTone);
+    if (otherToneCheckbox?.checked) toggleTone();
+  }
+
   const otherTag  = griefTags.find(t => t.value === 'other');
   const otherWrap = document.getElementById('other-grief-wrap');
   if (otherTag && otherWrap) {
@@ -179,10 +191,23 @@ async function init() {
       return;
     }
 
-    const toneId = form.querySelector('input[name="tone"]:checked')?.value;
+    let toneId = form.querySelector('input[name="tone"]:checked')?.value;
     if (!toneId) {
       showToast('Please select a tone.', 'error');
       return;
+    }
+
+    const otherToneText = document.getElementById('other-tone-input')?.value.trim();
+    if (otherToneTag && toneId === String(otherToneTag.id) && otherToneText) {
+      const slug = 'other_' + otherToneText.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+      const { data: existingTone } = await supabase.from('tags').select('id').eq('category', 'tone').eq('value', slug).maybeSingle();
+      if (existingTone) {
+        toneId = existingTone.id;
+      } else {
+        const { data: newTone, error: toneErr } = await supabase.from('tags').insert({ category: 'tone', value: slug, label: otherToneText }).select('id').single();
+        if (toneErr) throw new Error(`Tone tag could not be saved: ${toneErr.message}`);
+        toneId = newTone.id;
+      }
     }
 
     const submitBtn = document.getElementById('submit-btn');
