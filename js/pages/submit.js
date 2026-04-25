@@ -160,12 +160,38 @@ async function init() {
     updateCharCount(existing.body || '');
   }
 
-  const bodyEl = document.getElementById('body-input');
-  const charEl = document.getElementById('char-count');
+  const bodyEl  = document.getElementById('body-input');
+  const charEl  = document.getElementById('char-count');
+  const toneEl  = document.getElementById('tone-list');
+  const tierEl  = document.getElementById('consent-cards');
+
   function updateCharCount(val) {
     charEl.textContent = `${val.length} characters${val.length < MIN_BODY ? ` (min ${MIN_BODY})` : ''}`;
+    charEl.classList.toggle('form-char-count--valid', val.length >= MIN_BODY);
+    charEl.classList.toggle('form-char-count--error', val.length > 0 && val.length < MIN_BODY);
   }
-  bodyEl.addEventListener('input', e => updateCharCount(e.target.value));
+
+  function setFieldError(el, hasError) {
+    el?.classList.toggle('form-textarea--error', hasError);
+    el?.classList.toggle('form-input--error', hasError);
+  }
+
+  function setGroupError(el, hasError) {
+    el?.classList.toggle('check-group--error', hasError);
+    el?.classList.toggle('consent-card-group--error', hasError);
+  }
+
+  bodyEl.addEventListener('input', e => {
+    updateCharCount(e.target.value);
+    if (e.target.value.trim().length >= MIN_BODY) setFieldError(bodyEl, false);
+  });
+  bodyEl.addEventListener('blur', e => {
+    const val = e.target.value.trim();
+    if (val.length > 0 && val.length < MIN_BODY) setFieldError(bodyEl, true);
+  });
+
+  toneEl?.addEventListener('change', () => setGroupError(toneEl, false));
+  tierEl?.addEventListener('change', () => setGroupError(tierEl, false));
 
   let formDirty = false;
   document.getElementById('submit-form').addEventListener('input', () => { formDirty = true; }, { once: true });
@@ -189,6 +215,7 @@ async function init() {
     const body = form.body.value.trim();
     if (body.length < MIN_BODY) {
       showToast(`Story body must be at least ${MIN_BODY} characters.`, 'error');
+      setFieldError(bodyEl, true);
       scrollTo(bodyEl);
       bodyEl.focus();
       return;
@@ -197,14 +224,16 @@ async function init() {
     let toneId = form.querySelector('input[name="tone"]:checked')?.value;
     if (!toneId) {
       showToast('Please select a tone.', 'error');
-      scrollTo(document.getElementById('tone-list'));
+      setGroupError(toneEl, true);
+      scrollTo(toneEl);
       return;
     }
 
     const tierId = parseInt(form.querySelector('input[name="consent_tier_id"]:checked')?.value, 10);
     if (!tierId) {
       showToast('Please select a consent tier.', 'error');
-      scrollTo(document.getElementById('consent-cards'));
+      setGroupError(tierEl, true);
+      scrollTo(tierEl);
       return;
     }
 
