@@ -117,18 +117,8 @@ async function init() {
   document.getElementById('page-title').textContent = isEdit ? 'Edit Story' : 'Submit a Story';
 
   document.getElementById('grief-list').innerHTML    = buildCheckboxList(griefTags, 'grief_type', existingTagIds);
+  document.getElementById('tone-list').innerHTML     = buildRadioList(toneTags, 'tone', existingTagIds.find(id => toneTags.some(t => t.id === id)) ?? null);
   document.getElementById('consent-cards').innerHTML = buildConsentCards(tiers);
-
-  if (isEdit) {
-    const selectedToneId = existingTagIds.find(id => toneTags.some(t => t.id === id)) ?? null;
-    const toneSection = document.createElement('div');
-    toneSection.className = 'form-group';
-    toneSection.id = 'tone-section';
-    toneSection.innerHTML = `
-      <p class="form-label">Tone <span style="font-weight:400;color:var(--color-muted)">(select exactly one)</span></p>
-      <div class="check-group">${buildRadioList(toneTags, 'tone', selectedToneId)}</div>`;
-    document.getElementById('grief-list').closest('.form-group').after(toneSection);
-  }
 
   if (existing) {
     const f = document.getElementById('submit-form');
@@ -177,8 +167,8 @@ async function init() {
       return;
     }
 
-    const toneId = isEdit ? form.querySelector('input[name="tone"]:checked')?.value : null;
-    if (isEdit && !toneId) {
+    const toneId = form.querySelector('input[name="tone"]:checked')?.value;
+    if (!toneId) {
       showToast('Please select a tone.', 'error');
       return;
     }
