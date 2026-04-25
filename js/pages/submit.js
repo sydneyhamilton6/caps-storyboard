@@ -120,6 +120,18 @@ async function init() {
   document.getElementById('tone-list').innerHTML     = buildRadioList(toneTags, 'tone', existingTagIds.find(id => toneTags.some(t => t.id === id)) ?? null);
   document.getElementById('consent-cards').innerHTML = buildConsentCards(tiers);
 
+  const otherTag  = griefTags.find(t => t.value === 'other');
+  const otherWrap = document.getElementById('other-grief-wrap');
+  if (otherTag && otherWrap) {
+    const otherCheckbox = document.getElementById(`grief_type-${otherTag.id}`);
+    const toggle = () => {
+      otherWrap.style.display = otherCheckbox.checked ? 'block' : 'none';
+      if (!otherCheckbox.checked) document.getElementById('other-grief-input').value = '';
+    };
+    otherCheckbox?.addEventListener('change', toggle);
+    if (otherCheckbox?.checked) toggle();
+  }
+
   if (existing) {
     const f = document.getElementById('submit-form');
     f.title.value           = existing.title || '';
@@ -178,7 +190,22 @@ async function init() {
     submitBtn.textContent = isEdit ? 'Saving…' : 'Submitting…';
 
     try {
-      const griefIds = [...form.querySelectorAll('input[name="grief_type"]:checked')].map(i => i.value);
+      let griefIds = [...form.querySelectorAll('input[name="grief_type"]:checked')].map(i => i.value);
+
+      const otherGriefText = document.getElementById('other-grief-input')?.value.trim();
+      if (otherGriefText && otherTag) {
+        const slug = 'other_' + otherGriefText.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        const { data: existingOther } = await supabase.from('tags').select('id').eq('category', 'grief_type').eq('value', slug).maybeSingle();
+        let otherCustomId;
+        if (existingOther) {
+          otherCustomId = existingOther.id;
+        } else {
+          const { data: newOther, error: otherErr } = await supabase.from('tags').insert({ category: 'grief_type', value: slug, label: otherGriefText }).select('id').single();
+          if (otherErr) throw new Error(`Other grief tag could not be saved: ${otherErr.message}`);
+          otherCustomId = newOther.id;
+        }
+        griefIds = [...griefIds.filter(id => id !== String(otherTag.id)), otherCustomId];
+      }
 
       const employeeName = form.employee_name.value.trim();
       let employeeTagId = null;
