@@ -184,9 +184,13 @@ async function init() {
   const tierEl  = document.getElementById('consent-cards');
 
   function updateCharCount(val) {
-    charEl.textContent = `${val.length} characters${val.length < MIN_BODY ? ` (min ${MIN_BODY})` : ''}`;
-    charEl.classList.toggle('form-char-count--valid', val.length >= MIN_BODY);
-    charEl.classList.toggle('form-char-count--error', val.length > 0 && val.length < MIN_BODY);
+    const chars = val.length;
+    const words = val.trim() === '' ? 0 : val.trim().split(/\s+/).length;
+    const wordStr = `${words} word${words !== 1 ? 's' : ''}`;
+    const charStr = `${chars} character${chars !== 1 ? 's' : ''}${chars < MIN_BODY ? ` (min ${MIN_BODY})` : ''}`;
+    charEl.textContent = `${wordStr} · ${charStr}`;
+    charEl.classList.toggle('form-char-count--valid', chars >= MIN_BODY);
+    charEl.classList.toggle('form-char-count--error', chars > 0 && chars < MIN_BODY);
   }
 
   function setFieldError(el, hasError) {

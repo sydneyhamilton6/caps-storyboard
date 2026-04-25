@@ -408,8 +408,8 @@
 
 .check-item input[type="checkbox"],
 .check-item input[type="radio"] {
-  width: 1rem;
-  height: 1rem;
+  width: 1.125rem;
+  height: 1.125rem;
   accent-color: var(--color-brand-teal);
   cursor: pointer;
   flex-shrink: 0;
