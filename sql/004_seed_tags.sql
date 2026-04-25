@@ -22,4 +22,11 @@ INSERT INTO tags (category, value, label, sort_order) VALUES
   ('tone', 'inspirational', 'Inspirational', 10),
   ('tone', 'volunteer',     'Volunteer',     20),
   ('tone', 'sad',           'Sad',           30),
-  ('tone', 'other',         'Other',         40);
+  ('tone', 'hopeful',       'Hopeful',       40),
+  ('tone', 'reflective',    'Reflective',    50),
+  ('tone', 'celebratory',   'Celebratory',   60),
+  ('tone', 'grateful',      'Grateful',      70),
+  ('tone', 'raw',           'Raw',           80),
+  ('tone', 'bittersweet',   'Bittersweet',   90),
+  ('tone', 'peaceful',      'Peaceful',      100),
+  ('tone', 'other',         'Other',         110);
