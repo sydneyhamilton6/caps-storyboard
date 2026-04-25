@@ -10,7 +10,7 @@ INSERT INTO tags (category, value, label, sort_order) VALUES
   ('grief_type', 'loss_of_friend',            'Loss of Friend',              50),
   ('grief_type', 'loss_of_pet',               'Loss of Pet',                 60),
   ('grief_type', 'pregnancy_loss',            'Pregnancy Loss / Miscarriage', 70),
-  ('grief_type', 'loss_of_pregnancy_dreams',  'Loss of Pregnancy Dreams',    80),
+  ('grief_type', 'loss_of_pregnancy_dreams',  'Infertility / Inability to Have Children', 80),
   ('grief_type', 'loss_to_suicide',           'Loss to Suicide',             90),
   ('grief_type', 'loss_to_addiction',         'Loss to Addiction',           100),
   ('grief_type', 'anticipatory_grief',        'Anticipatory Grief',          110),
