@@ -85,8 +85,8 @@
                     </div>
 
                     <div class="form-group">
-                      <label class="form-label" for="employee-name">Employee <span style="font-weight:400;color:var(--color-muted)">(optional — who was involved?)</span></label>
-                      <input type="text" id="employee-name" name="employee_name" class="form-input" placeholder="Enter employee name…" maxlength="120">
+                      <label class="form-label" for="employee-name">Employee <span style="font-weight:400;color:var(--color-muted)">(optional)</span></label>
+                      <input type="text" id="employee-name" name="employee_name" class="form-input" placeholder="Name of a staff member involved in this person's care…" maxlength="120">
                     </div>
 
                   </div>
@@ -94,7 +94,7 @@
 
                 <!-- Section 3: Consent -->
                 <div class="form-panel">
-                  <h2 class="form-panel__title">Consent Tier</h2>
+                  <h2 class="form-panel__title">Consent Tier <span style="font-size:0.75rem;font-weight:400;color:var(--color-danger)">Required</span></h2>
                   <p class="form-hint" style="margin-bottom:var(--sp-4)">Choose how this story may be shared. When in doubt, select Anonymous.</p>
                   <div class="consent-card-group" id="consent-cards">
                     <!-- populated by JS -->
@@ -114,7 +114,11 @@
                   <p class="submit-sidebar__title">What you'll need</p>
                   <div class="submit-sidebar__item">
                     <span class="submit-sidebar__field">Story</span>
-                    <span class="submit-sidebar__value">At least 20 characters of text</span>
+                    <span class="submit-sidebar__value">Required — at least 20 characters</span>
+                  </div>
+                  <div class="submit-sidebar__item">
+                    <span class="submit-sidebar__field">Tone</span>
+                    <span class="submit-sidebar__value">Required — select exactly one</span>
                   </div>
                   <div class="submit-sidebar__item">
                     <span class="submit-sidebar__field">Consent tier</span>
@@ -122,7 +126,7 @@
                   </div>
                   <div class="submit-sidebar__item">
                     <span class="submit-sidebar__field">Everything else</span>
-                    <span class="submit-sidebar__value">Optional — name, email, grief type, employee</span>
+                    <span class="submit-sidebar__value">Optional — title, name, email, grief type, employee</span>
                   </div>
                 </div>
               </aside>

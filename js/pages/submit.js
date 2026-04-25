@@ -167,6 +167,12 @@ async function init() {
   }
   bodyEl.addEventListener('input', e => updateCharCount(e.target.value));
 
+  let formDirty = false;
+  document.getElementById('submit-form').addEventListener('input', () => { formDirty = true; }, { once: true });
+  window.addEventListener('beforeunload', e => {
+    if (formDirty) e.preventDefault();
+  });
+
   document.querySelectorAll('input[name="consent_tier_id"]').forEach(r => {
     r.addEventListener('change', () => {
       document.querySelectorAll('.consent-card').forEach(c => c.classList.remove('consent-card--selected'));
@@ -178,22 +184,27 @@ async function init() {
     e.preventDefault();
     const form = e.target;
 
+    const scrollTo = el => el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
     const body = form.body.value.trim();
     if (body.length < MIN_BODY) {
       showToast(`Story body must be at least ${MIN_BODY} characters.`, 'error');
-      form.body.focus();
-      return;
-    }
-
-    const tierId = parseInt(form.querySelector('input[name="consent_tier_id"]:checked')?.value, 10);
-    if (!tierId) {
-      showToast('Please select a consent tier.', 'error');
+      scrollTo(bodyEl);
+      bodyEl.focus();
       return;
     }
 
     let toneId = form.querySelector('input[name="tone"]:checked')?.value;
     if (!toneId) {
       showToast('Please select a tone.', 'error');
+      scrollTo(document.getElementById('tone-list'));
+      return;
+    }
+
+    const tierId = parseInt(form.querySelector('input[name="consent_tier_id"]:checked')?.value, 10);
+    if (!tierId) {
+      showToast('Please select a consent tier.', 'error');
+      scrollTo(document.getElementById('consent-cards'));
       return;
     }
 
@@ -261,6 +272,7 @@ async function init() {
       };
 
       const storyId = await upsert(isEdit ? editId : null, fields, tagIds);
+      formDirty = false;
       showConfirmation(storyId);
     } catch (err) {
       console.error('Submission error:', err);
