@@ -68,7 +68,24 @@ function buildRadioList(tags, name, selectedId = null) {
     </label>`).join('');
 }
 
-function showConfirmation(storyId) {
+function showConfirmation(storyId, summary) {
+  const rows = [
+    summary.title    && { label: 'Title',        value: summary.title },
+    summary.tone     && { label: 'Tone',          value: summary.tone },
+    summary.consent  && { label: 'Consent tier',  value: summary.consent },
+    summary.grief    && { label: 'Grief type(s)', value: summary.grief },
+    summary.name     && { label: 'Submitter',     value: summary.name },
+  ].filter(Boolean);
+
+  const summaryHTML = rows.length ? `
+    <dl class="confirm-summary">
+      ${rows.map(r => `
+        <div class="confirm-summary__row">
+          <dt class="confirm-summary__label">${r.label}</dt>
+          <dd class="confirm-summary__value">${r.value}</dd>
+        </div>`).join('')}
+    </dl>` : '';
+
   document.getElementById('form-root').innerHTML = `
     <div class="confirm-screen rise">
       <div class="confirm-screen__icon">
@@ -78,9 +95,10 @@ function showConfirmation(storyId) {
       </div>
       <h1 class="confirm-screen__title">Thank you for sharing</h1>
       <p class="confirm-screen__body">
-        Your story has been submitted and is now part of the Grief Support Hub.
-        It may help a colleague better understand what someone else is going through.
+        This story is now part of the Grief Support Hub and may help a colleague
+        better understand what someone else is going through.
       </p>
+      ${summaryHTML}
       <div class="confirm-screen__actions">
         <a href="story.html?id=${storyId}" class="btn btn--primary">View story</a>
         <a href="index.html" class="btn btn--ghost">Submit another</a>
@@ -302,7 +320,18 @@ async function init() {
 
       const storyId = await upsert(isEdit ? editId : null, fields, tagIds);
       formDirty = false;
-      showConfirmation(storyId);
+
+      const selectedToneLabel   = toneTags.find(t => String(t.id) === String(toneId))?.label ?? otherToneText ?? null;
+      const selectedGriefLabels = griefTags.filter(t => griefIds.includes(String(t.id))).map(t => t.label);
+      const selectedTierLabel   = tiers.find(t => t.id === tierId)?.label ?? null;
+
+      showConfirmation(storyId, {
+        title:   fields.title,
+        tone:    selectedToneLabel,
+        consent: selectedTierLabel,
+        grief:   selectedGriefLabels.length ? selectedGriefLabels.join(', ') : null,
+        name:    fields.submitter_name,
+      });
     } catch (err) {
       console.error('Submission error:', err);
       showToast('Submission failed. Please try again.', 'error');
