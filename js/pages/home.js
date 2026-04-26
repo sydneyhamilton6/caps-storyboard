@@ -6,12 +6,15 @@ import { debounce } from '../utils.js';
 
 async function getTagCounts() {
   const { data, error } = await supabase
-    .from('testimonial_tags')
-    .select('tag_id');
+    .from('testimonials')
+    .select('testimonial_tags(tag_id)')
+    .eq('status', 'published');
   if (error) return {};
   const counts = {};
-  for (const row of data) {
-    counts[row.tag_id] = (counts[row.tag_id] || 0) + 1;
+  for (const story of data) {
+    for (const tt of story.testimonial_tags || []) {
+      counts[tt.tag_id] = (counts[tt.tag_id] || 0) + 1;
+    }
   }
   return counts;
 }

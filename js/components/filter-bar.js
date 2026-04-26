@@ -1,6 +1,6 @@
 import { debounce, setParam, getParams } from '../utils.js';
 
-export function renderFilterBar(container, { tags, filters, onChange }) {
+export function renderFilterBar(container, { tags, employeeTags = [], filters, onChange }) {
   const tones      = tags.filter(t => t.category === 'tone');
   const griefTypes = tags.filter(t => t.category === 'grief_type');
 
@@ -8,6 +8,14 @@ export function renderFilterBar(container, { tags, filters, onChange }) {
     const active = current === value ? ' filter-chip--active' : '';
     return `<button class="filter-chip${active}" data-key="${key}" data-value="${value === current ? '' : value}">${label}</button>`;
   }
+
+  const toneOptions = tones.map(t =>
+    `<option value="${t.value}" ${filters.tone === t.value ? 'selected' : ''}>${t.label}</option>`
+  ).join('');
+
+  const employeeOptions = employeeTags.map(t =>
+    `<option value="${t.value}" ${filters.employee === t.value ? 'selected' : ''}>${t.label}</option>`
+  ).join('');
 
   container.innerHTML = `
     <div class="filter-bar">
@@ -21,10 +29,14 @@ export function renderFilterBar(container, { tags, filters, onChange }) {
       </div>
 
       <div class="filter-bar__group">
-        ${tones.map(t => chip('tone', t.value, t.label, filters.tone)).join('')}
-      </div>
-
-      <div class="filter-bar__group">
+        <select class="sort-select" id="tone-select" aria-label="Filter by tone">
+          <option value="">All tones</option>
+          ${toneOptions}
+        </select>
+        <select class="sort-select" id="employee-select" aria-label="Filter by employee">
+          <option value="">All employees</option>
+          ${employeeOptions}
+        </select>
         <select class="sort-select" id="sort-select" aria-label="Sort order">
           <option value="newest" ${filters.sort === 'newest' ? 'selected' : ''}>Newest</option>
           <option value="oldest" ${filters.sort === 'oldest' ? 'selected' : ''}>Oldest</option>
@@ -46,6 +58,14 @@ export function renderFilterBar(container, { tags, filters, onChange }) {
   }, 320);
 
   container.querySelector('#search-input')?.addEventListener('input', e => debouncedSearch(e.target.value));
+  container.querySelector('#tone-select')?.addEventListener('change', e => {
+    setParam('tone', e.target.value);
+    onChange();
+  });
+  container.querySelector('#employee-select')?.addEventListener('change', e => {
+    setParam('employee', e.target.value);
+    onChange();
+  });
   container.querySelector('#sort-select')?.addEventListener('change', e => {
     setParam('sort', e.target.value);
     onChange();

@@ -8,6 +8,18 @@ import { getParams } from '../utils.js';
 const PAGE_SIZE = 18;
 let currentPage = 1;
 
+async function fetchEmployeeTagsInUse() {
+  const { data, error } = await supabase
+    .from('tags')
+    .select('id, value, label, testimonial_tags(testimonial_id)')
+    .eq('category', 'employee');
+  if (error || !data?.length) return [];
+  return data
+    .filter(t => (t.testimonial_tags || []).length > 0)
+    .map(({ id, value, label }) => ({ id, value, label, category: 'employee' }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+}
+
 async function fetchStories(filters, page) {
   let query = supabase
     .from('testimonials')
@@ -76,13 +88,14 @@ async function load() {
   const filters = getFiltersFromUrl();
   currentPage   = parseInt(getParams().get('page') || '1', 10);
 
-  const [tags, stories] = await Promise.all([
+  const [tags, stories, employeeTags] = await Promise.all([
     loadTags(),
     fetchStories(filters, currentPage),
+    fetchEmployeeTagsInUse(),
   ]);
 
   renderFilterBar(document.getElementById('filter-root'), {
-    tags, filters,
+    tags, employeeTags, filters,
     onChange: () => { currentPage = 1; load(); },
   });
 

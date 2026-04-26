@@ -360,7 +360,7 @@
 }
 
 .data-table th {
-  padding: var(--sp-3) var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
   text-align: left;
   font-size: 10px;
   font-weight: 700;
@@ -372,7 +372,7 @@
 }
 
 .data-table td {
-  padding: var(--sp-3) var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
   color: var(--color-ink);
   border-bottom: 1px solid var(--color-line);
   vertical-align: middle;
@@ -388,8 +388,10 @@
 
 .data-table__actions {
   display: flex;
-  gap: var(--sp-2);
+  flex-wrap: wrap;
+  gap: var(--sp-1);
   align-items: center;
+  max-width: 160px;
 }
 
 /* ─── Pagination ──────────────────────────────────────────────── */

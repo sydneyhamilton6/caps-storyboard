@@ -1,7 +1,6 @@
 const LINKS = [
-  { href: 'index.html',   label: 'Browse' },
+  { href: 'index.html',   label: 'Submit' },
   { href: 'stories.html', label: 'Stories' },
-  { href: 'submit.html',  label: 'Submit' },
   { href: 'admin.html',   label: 'Admin' },
 ];
 
@@ -33,9 +32,6 @@ export function renderNav(container) {
           </a>
           <div class="nav__links" role="list">${linksHtml}</div>
           <div class="nav__spacer"></div>
-          <div class="nav__actions">
-            <a href="submit.html" class="btn btn--primary btn--sm">+ Submit Story</a>
-          </div>
         </div>
       </div>
     </nav>`;

@@ -23,7 +23,7 @@
             <p class="eyebrow eyebrow--teal" style="margin-bottom:8px">Internal Dashboard</p>
             <h1 style="font-family:var(--font-display);font-size:1.75rem;font-weight:600">Admin</h1>
           </div>
-          <a href="submit.html" class="btn btn--primary">+ Submit Story</a>
+          <a href="index.html" class="btn btn--primary">+ Submit Story</a>
         </div>
 
         <!-- TODO(v2-auth): Insert Supabase Auth check here. Redirect non-staff users to login. -->
@@ -71,7 +71,7 @@
           </select>
 
           <select id="filter-status" class="sort-select" aria-label="Filter by status">
-            <option value="">All statuses</option>
+            <option value="">Active (non-archived)</option>
             <option value="published">Published</option>
             <option value="archived">Archived</option>
           </select>
@@ -101,7 +101,7 @@
               </tr>
             </thead>
             <tbody id="story-tbody">
-              <tr><td colspan="7" style="text-align:center;padding:48px;color:var(--color-muted)">Loading…</td></tr>
+              <tr><td colspan="8" style="text-align:center;padding:48px;color:var(--color-muted)">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -114,9 +114,9 @@
         <div class="footer__inner">
           <span class="footer__copy">© 2026 Collective for Hope — Internal Use Only</span>
           <nav class="footer__links" aria-label="Footer navigation">
-            <a href="index.html"   class="footer__link">Home</a>
+            <a href="index.html"   class="footer__link">Submit</a>
             <a href="stories.html" class="footer__link">Stories</a>
-            <a href="submit.html"  class="footer__link">Submit</a>
+            <a href="admin.html"   class="footer__link">Admin</a>
           </nav>
         </div>
       </div>

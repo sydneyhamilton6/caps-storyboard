@@ -157,6 +157,23 @@
   color: inherit;
 }
 
+/* Employee cards: soft purple border */
+#employee-folders .folder-card {
+  border-color: rgba(150, 120, 180, 0.45);
+  border-width: 1.5px;
+}
+
+#employee-folders:has(.folder-card:hover) .folder-card:not(:hover) {
+  opacity: 0.45;
+}
+
+#employee-folders .folder-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(150, 120, 180, 0.9);
+  box-shadow: 0 8px 24px rgba(150, 120, 180, 0.2), var(--shadow-lift);
+  opacity: 1;
+}
+
 /* Grief type cards: dandelion border + drop shadow */
 #grief-folders .folder-card {
   border-color: rgba(195, 150, 30, 0.65);
@@ -343,6 +360,28 @@
   font-size: 0.75rem;
   color: var(--color-muted);
   text-align: right;
+  transition: color var(--ease-ui);
+}
+.form-char-count--valid { color: var(--color-consent-public-text); }
+.form-char-count--error { color: var(--color-consent-private-text); }
+
+.form-input--error,
+.form-textarea--error {
+  border-color: var(--color-consent-private);
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+}
+
+.field-error-msg {
+  font-size: 0.75rem;
+  color: var(--color-consent-private-text);
+  margin-top: var(--sp-1);
+}
+
+.check-group--error,
+.consent-card-group--error {
+  outline: 2px solid var(--color-consent-private);
+  outline-offset: 6px;
+  border-radius: var(--radius-sm);
 }
 
 /* ─── Checkbox / Radio ────────────────────────────────────────── */
@@ -369,8 +408,8 @@
 
 .check-item input[type="checkbox"],
 .check-item input[type="radio"] {
-  width: 1rem;
-  height: 1rem;
+  width: 1.125rem;
+  height: 1.125rem;
   accent-color: var(--color-brand-teal);
   cursor: pointer;
   flex-shrink: 0;

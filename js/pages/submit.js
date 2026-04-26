@@ -8,7 +8,7 @@ const MIN_BODY = 20;
 async function fetchForEdit(id) {
   const { data, error } = await supabase
     .from('testimonials')
-    .select('*, testimonial_tags(tag_id)')
+    .select('*, testimonial_tags(tag_id, tags(category, label))')
     .eq('id', id)
     .single();
   if (error) throw error;
@@ -68,7 +68,24 @@ function buildRadioList(tags, name, selectedId = null) {
     </label>`).join('');
 }
 
-function showConfirmation(storyId) {
+function showConfirmation(storyId, summary) {
+  const rows = [
+    summary.title    && { label: 'Title',        value: summary.title },
+    summary.tone     && { label: 'Tone',          value: summary.tone },
+    summary.consent  && { label: 'Consent tier',  value: summary.consent },
+    summary.grief    && { label: 'Grief type(s)', value: summary.grief },
+    summary.name     && { label: 'Submitter',     value: summary.name },
+  ].filter(Boolean);
+
+  const summaryHTML = rows.length ? `
+    <dl class="confirm-summary">
+      ${rows.map(r => `
+        <div class="confirm-summary__row">
+          <dt class="confirm-summary__label">${r.label}</dt>
+          <dd class="confirm-summary__value">${r.value}</dd>
+        </div>`).join('')}
+    </dl>` : '';
+
   document.getElementById('form-root').innerHTML = `
     <div class="confirm-screen rise">
       <div class="confirm-screen__icon">
@@ -78,12 +95,13 @@ function showConfirmation(storyId) {
       </div>
       <h1 class="confirm-screen__title">Thank you for sharing</h1>
       <p class="confirm-screen__body">
-        Your story has been submitted and is now part of the Grief Support Hub.
-        It may help a colleague better understand what someone else is going through.
+        This story is now part of the Grief Support Hub and may help a colleague
+        better understand what someone else is going through.
       </p>
+      ${summaryHTML}
       <div class="confirm-screen__actions">
         <a href="story.html?id=${storyId}" class="btn btn--primary">View story</a>
-        <a href="submit.html" class="btn btn--ghost">Submit another</a>
+        <a href="index.html" class="btn btn--ghost">Submit another</a>
       </div>
     </div>`;
 }
@@ -95,10 +113,17 @@ async function init() {
   const editId  = params.get('id');
   const isEdit  = params.get('edit') === 'true' && editId;
 
-  const [tags, tiers] = await Promise.all([loadTags(), loadConsentTiers()]);
-  const griefTags    = tags.filter(t => t.category === 'grief_type');
-  const toneTags     = tags.filter(t => t.category === 'tone');
-  const employeeTags = tags.filter(t => t.category === 'employee');
+  let tags, tiers;
+  try {
+    [tags, tiers] = await Promise.all([loadTags(), loadConsentTiers()]);
+  } catch (err) {
+    console.error('Failed to load form data:', err);
+    document.getElementById('form-root').innerHTML =
+      '<p style="padding:2rem;color:var(--color-muted)">Unable to load the form. Please refresh the page.</p>';
+    return;
+  }
+  const griefTags = tags.filter(t => t.category === 'grief_type');
+  const toneTags  = tags.filter(t => t.category === 'tone');
 
   let existing = null;
   let existingTagIds = [];
@@ -109,28 +134,104 @@ async function init() {
 
   document.getElementById('page-title').textContent = isEdit ? 'Edit Story' : 'Submit a Story';
 
-  document.getElementById('grief-list').innerHTML     = buildCheckboxList(griefTags,    'grief_type', existingTagIds);
-  document.getElementById('tone-list').innerHTML      = buildRadioList(toneTags,        'tone',       existingTagIds.find(id => toneTags.some(t => t.id === id)) || null);
-  document.getElementById('employee-list').innerHTML  = buildCheckboxList(employeeTags, 'employee',   existingTagIds);
-  document.getElementById('consent-cards').innerHTML  = buildConsentCards(tiers);
+  document.getElementById('grief-list').innerHTML    = buildCheckboxList(griefTags, 'grief_type', existingTagIds);
+  document.getElementById('consent-cards').innerHTML = buildConsentCards(tiers);
+
+  if (isEdit) {
+    const selectedToneId = existingTagIds.find(id => toneTags.some(t => t.id === id)) ?? null;
+    const toneSection = document.createElement('div');
+    toneSection.className = 'form-group';
+    toneSection.innerHTML = `
+      <p class="form-label">Tone <span style="font-weight:400;color:var(--color-muted)">(select exactly one)</span></p>
+      <div class="check-group" id="tone-list">${buildRadioList(toneTags, 'tone', selectedToneId)}</div>
+      <div id="other-tone-wrap" style="display:none;margin-top:0.75rem">
+        <input type="text" id="other-tone-input" class="form-input" placeholder="Please describe the tone…" maxlength="120">
+      </div>`;
+    document.getElementById('grief-list').closest('.form-group').after(toneSection);
+  }
+
+  const otherToneTag  = toneTags.find(t => t.value === 'other');
+  const otherToneWrap = document.getElementById('other-tone-wrap');
+  if (otherToneTag && otherToneWrap) {
+    const otherToneCheckbox = document.getElementById(`tone-${otherToneTag.id}`);
+    const toggleTone = () => {
+      otherToneWrap.style.display = otherToneCheckbox.checked ? 'block' : 'none';
+      if (!otherToneCheckbox.checked) document.getElementById('other-tone-input').value = '';
+    };
+    otherToneCheckbox?.addEventListener('change', toggleTone);
+    if (otherToneCheckbox?.checked) toggleTone();
+  }
+
+  const otherTag  = griefTags.find(t => t.value === 'other');
+  const otherWrap = document.getElementById('other-grief-wrap');
+  if (otherTag && otherWrap) {
+    const otherCheckbox = document.getElementById(`grief_type-${otherTag.id}`);
+    const toggle = () => {
+      otherWrap.style.display = otherCheckbox.checked ? 'block' : 'none';
+      if (!otherCheckbox.checked) document.getElementById('other-grief-input').value = '';
+    };
+    otherCheckbox?.addEventListener('change', toggle);
+    if (otherCheckbox?.checked) toggle();
+  }
 
   if (existing) {
     const f = document.getElementById('submit-form');
-    f.title.value          = existing.title || '';
-    f.body.value           = existing.body  || '';
-    f.submitter_name.value = existing.submitter_name || '';
+    f.title.value           = existing.title || '';
+    f.body.value            = existing.body  || '';
+    f.submitter_name.value  = existing.submitter_name  || '';
     f.submitter_email.value = existing.submitter_email || '';
+
+    const employeeTag = (existing.testimonial_tags || [])
+      .find(tt => tt.tags?.category === 'employee');
+    if (employeeTag) f.employee_name.value = employeeTag.tags.label;
+
     const tierRadio = f.querySelector(`input[name="consent_tier_id"][value="${existing.consent_tier_id}"]`);
     if (tierRadio) { tierRadio.checked = true; tierRadio.closest('.consent-card')?.classList.add('consent-card--selected'); }
     updateCharCount(existing.body || '');
   }
 
-  const bodyEl = document.getElementById('body-input');
-  const charEl = document.getElementById('char-count');
+  const bodyEl  = document.getElementById('body-input');
+  const charEl  = document.getElementById('char-count');
+  const toneEl  = document.getElementById('tone-list');
+  const tierEl  = document.getElementById('consent-cards');
+
   function updateCharCount(val) {
-    charEl.textContent = `${val.length} characters${val.length < MIN_BODY ? ` (min ${MIN_BODY})` : ''}`;
+    const chars = val.length;
+    const words = val.trim() === '' ? 0 : val.trim().split(/\s+/).length;
+    const wordStr = `${words} word${words !== 1 ? 's' : ''}`;
+    const charStr = `${chars} character${chars !== 1 ? 's' : ''}${chars < MIN_BODY ? ` (min ${MIN_BODY})` : ''}`;
+    charEl.textContent = `${wordStr} · ${charStr}`;
+    charEl.classList.toggle('form-char-count--valid', chars >= MIN_BODY);
+    charEl.classList.toggle('form-char-count--error', chars > 0 && chars < MIN_BODY);
   }
-  bodyEl.addEventListener('input', e => updateCharCount(e.target.value));
+
+  function setFieldError(el, hasError) {
+    el?.classList.toggle('form-textarea--error', hasError);
+    el?.classList.toggle('form-input--error', hasError);
+  }
+
+  function setGroupError(el, hasError) {
+    el?.classList.toggle('check-group--error', hasError);
+    el?.classList.toggle('consent-card-group--error', hasError);
+  }
+
+  bodyEl.addEventListener('input', e => {
+    updateCharCount(e.target.value);
+    if (e.target.value.trim().length >= MIN_BODY) setFieldError(bodyEl, false);
+  });
+  bodyEl.addEventListener('blur', e => {
+    const val = e.target.value.trim();
+    if (val.length > 0 && val.length < MIN_BODY) setFieldError(bodyEl, true);
+  });
+
+  toneEl?.addEventListener('change', () => setGroupError(toneEl, false));
+  tierEl?.addEventListener('change', () => setGroupError(tierEl, false));
+
+  let formDirty = false;
+  document.getElementById('submit-form').addEventListener('input', () => { formDirty = true; }, { once: true });
+  window.addEventListener('beforeunload', e => {
+    if (formDirty) e.preventDefault();
+  });
 
   document.querySelectorAll('input[name="consent_tier_id"]').forEach(r => {
     r.addEventListener('change', () => {
@@ -143,60 +244,112 @@ async function init() {
     e.preventDefault();
     const form = e.target;
 
+    const scrollTo = el => el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
     const body = form.body.value.trim();
     if (body.length < MIN_BODY) {
       showToast(`Story body must be at least ${MIN_BODY} characters.`, 'error');
-      form.body.focus();
+      setFieldError(bodyEl, true);
+      scrollTo(bodyEl);
+      bodyEl.focus();
+      return;
+    }
+
+    let toneId = isEdit ? form.querySelector('input[name="tone"]:checked')?.value : null;
+    if (isEdit && !toneId) {
+      showToast('Please select a tone.', 'error');
+      setGroupError(toneEl, true);
+      scrollTo(toneEl);
       return;
     }
 
     const tierId = parseInt(form.querySelector('input[name="consent_tier_id"]:checked')?.value, 10);
     if (!tierId) {
       showToast('Please select a consent tier.', 'error');
+      setGroupError(tierEl, true);
+      scrollTo(tierEl);
       return;
     }
 
-    const toneId = form.querySelector('input[name="tone"]:checked')?.value;
-    if (!toneId) {
-      showToast('Please select a tone.', 'error');
-      return;
-    }
-
-    const griefIds = [...form.querySelectorAll('input[name="grief_type"]:checked')].map(i => i.value);
-
-    const employeeName = form.employee_name.value.trim();
-    let employeeTagId = null;
-    if (employeeName) {
-      const slug = 'employee_' + employeeName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
-      const { data: existing } = await supabase.from('tags').select('id').eq('category', 'employee').eq('value', slug).maybeSingle();
-      if (existing) {
-        employeeTagId = existing.id;
+    const otherToneText = document.getElementById('other-tone-input')?.value.trim();
+    if (otherToneTag && toneId === String(otherToneTag.id) && otherToneText) {
+      const slug = 'other_' + otherToneText.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+      const { data: existingTone } = await supabase.from('tags').select('id').eq('category', 'tone').eq('value', slug).maybeSingle();
+      if (existingTone) {
+        toneId = existingTone.id;
       } else {
-        const { data: newTag, error: tagErr } = await supabase.from('tags').insert({ category: 'employee', value: slug, label: employeeName }).select('id').single();
-        if (tagErr) throw tagErr;
-        employeeTagId = newTag.id;
+        const { data: newTone, error: toneErr } = await supabase.from('tags').insert({ category: 'tone', value: slug, label: otherToneText }).select('id').single();
+        if (toneErr) throw new Error(`Tone tag could not be saved: ${toneErr.message}`);
+        toneId = newTone.id;
       }
     }
-
-    const tagIds = [toneId, ...griefIds, ...(employeeTagId ? [employeeTagId] : [])];
-
-    const fields = {
-      title:            form.title.value.trim() || null,
-      body,
-      submitter_name:   form.submitter_name.value.trim()  || null,
-      submitter_email:  form.submitter_email.value.trim() || null,
-      consent_tier_id:  tierId,
-      status:           'published',
-    };
 
     const submitBtn = document.getElementById('submit-btn');
     submitBtn.disabled = true;
     submitBtn.textContent = isEdit ? 'Saving…' : 'Submitting…';
 
     try {
+      let griefIds = [...form.querySelectorAll('input[name="grief_type"]:checked')].map(i => i.value);
+
+      const otherGriefText = document.getElementById('other-grief-input')?.value.trim();
+      if (otherGriefText && otherTag) {
+        const slug = 'other_' + otherGriefText.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        const { data: existingOther } = await supabase.from('tags').select('id').eq('category', 'grief_type').eq('value', slug).maybeSingle();
+        let otherCustomId;
+        if (existingOther) {
+          otherCustomId = existingOther.id;
+        } else {
+          const { data: newOther, error: otherErr } = await supabase.from('tags').insert({ category: 'grief_type', value: slug, label: otherGriefText }).select('id').single();
+          if (otherErr) throw new Error(`Other grief tag could not be saved: ${otherErr.message}`);
+          otherCustomId = newOther.id;
+        }
+        griefIds = [...griefIds.filter(id => id !== String(otherTag.id)), otherCustomId];
+      }
+
+      const employeeName = form.employee_name.value.trim();
+      let employeeTagId = null;
+      if (employeeName) {
+        const slug = 'employee_' + employeeName.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+        const { data: existingTag } = await supabase.from('tags').select('id').eq('category', 'employee').eq('value', slug).maybeSingle();
+        if (existingTag) {
+          employeeTagId = existingTag.id;
+        } else {
+          const { data: newTag, error: tagErr } = await supabase.from('tags').insert({ category: 'employee', value: slug, label: employeeName }).select('id').single();
+          if (tagErr) {
+            console.error('Employee tag insert failed:', tagErr);
+            throw new Error(`Employee tag could not be saved: ${tagErr.message}`);
+          }
+          employeeTagId = newTag.id;
+        }
+      }
+
+      const tagIds = [...(toneId ? [toneId] : []), ...griefIds, ...(employeeTagId ? [employeeTagId] : [])];
+
+      const fields = {
+        title:            form.title.value.trim() || null,
+        body,
+        submitter_name:   form.submitter_name.value.trim()  || null,
+        submitter_email:  form.submitter_email.value.trim() || null,
+        consent_tier_id:  tierId,
+        status:           'published',
+      };
+
       const storyId = await upsert(isEdit ? editId : null, fields, tagIds);
-      showConfirmation(storyId);
+      formDirty = false;
+
+      const selectedToneLabel   = toneTags.find(t => String(t.id) === String(toneId))?.label ?? otherToneText ?? null;
+      const selectedGriefLabels = griefTags.filter(t => griefIds.includes(String(t.id))).map(t => t.label);
+      const selectedTierLabel   = tiers.find(t => t.id === tierId)?.label ?? null;
+
+      showConfirmation(storyId, {
+        title:   fields.title,
+        tone:    selectedToneLabel,
+        consent: selectedTierLabel,
+        grief:   selectedGriefLabels.length ? selectedGriefLabels.join(', ') : null,
+        name:    fields.submitter_name,
+      });
     } catch (err) {
+      console.error('Submission error:', err);
       showToast('Submission failed. Please try again.', 'error');
       submitBtn.disabled = false;
       submitBtn.textContent = isEdit ? 'Save changes' : 'Submit story';

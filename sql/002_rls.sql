@@ -12,9 +12,11 @@ ALTER TABLE media              ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can read consent tiers"
   ON consent_tiers FOR SELECT USING (true);
 
--- tags: read-only
+-- tags: read + insert (employee tags are created dynamically on submit)
 CREATE POLICY "Anyone can read tags"
   ON tags FOR SELECT USING (true);
+CREATE POLICY "Anyone can insert tags"
+  ON tags FOR INSERT WITH CHECK (true);
 
 -- employees: read-only
 CREATE POLICY "Anyone can read employees"

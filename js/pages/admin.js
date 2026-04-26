@@ -14,7 +14,7 @@ async function fetchAll(filters) {
   let query = supabase
     .from('testimonials')
     .select(`
-      id, title, body, submitter_name, consent_tier_id, status, created_at,
+      id, title, body, submitter_name, submitter_email, consent_tier_id, status, created_at,
       testimonial_tags(tag_id, tags(category, value, label))
     `)
     .order('created_at', { ascending: false });
@@ -36,6 +36,14 @@ async function deleteMany(ids) {
   for (const id of ids) await deleteOne(id);
 }
 
+async function setStatus(id, status) {
+  const { error } = await supabase
+    .from('testimonials')
+    .update({ status })
+    .eq('id', id);
+  if (error) throw error;
+}
+
 function getFilters() {
   const q = document.getElementById('admin-search')?.value.trim() || '';
   const tier = document.getElementById('filter-tier')?.value || '';
@@ -45,11 +53,18 @@ function getFilters() {
 
 function applyFilters(data, { q, tier, status }) {
   return data.filter(s => {
-    if (status && s.status !== status) return false;
+    if (status === 'archived') {
+      if (s.status !== 'archived') return false;
+    } else if (status === 'published') {
+      if (s.status !== 'published') return false;
+    } else {
+      // default: hide archived stories unless explicitly requested
+      if (s.status === 'archived') return false;
+    }
     if (tier && String(s.consent_tier_id) !== tier) return false;
     if (q) {
       const needle = q.toLowerCase();
-      const haystack = `${s.title || ''} ${s.body} ${s.submitter_name || ''}`.toLowerCase();
+      const haystack = `${s.title || ''} ${s.body} ${s.submitter_name || ''} ${s.submitter_email || ''}`.toLowerCase();
       if (!haystack.includes(needle)) return false;
     }
     return true;
@@ -84,19 +99,24 @@ function renderTable(data) {
     const toneTag  = tags.find(t => t.category === 'tone');
     const title    = truncate(s.title || autoTitle(s.body), 50);
     const author   = s.consent_tier_id === 1 && s.submitter_name ? s.submitter_name : '—';
+    const emailLine = s.submitter_email
+      ? `<br><a href="mailto:${s.submitter_email}" style="font-size:0.75rem;color:var(--color-muted);font-weight:400">${s.submitter_email}</a>`
+      : '';
 
+    const isArchived = s.status === 'archived';
     return `
-      <tr data-id="${s.id}">
+      <tr data-id="${s.id}"${isArchived ? ' class="row--archived"' : ''}>
         <td><input type="checkbox" class="data-table__checkbox row-check" data-id="${s.id}" aria-label="Select story"></td>
-        <td class="title-excerpt">${title}</td>
-        <td>${author}</td>
+        <td class="title-excerpt">${title}${isArchived ? ' <span class="badge badge--archived">Archived</span>' : ''}</td>
+        <td>${author}${emailLine}</td>
         <td>${renderConsentBadge(s.consent_tier_id)}</td>
         <td>${toneTag ? `<span class="badge badge--tag">${toneTag.label}</span>` : '—'}</td>
         <td style="font-size:0.8rem;color:var(--color-muted)">${formatDate(s.created_at)}</td>
         <td>
           <div class="data-table__actions">
             <a href="story.html?id=${s.id}"  class="btn btn--ghost btn--sm">View</a>
-            <a href="submit.html?id=${s.id}&edit=true" class="btn btn--ghost btn--sm">Edit</a>
+            <a href="index.html?id=${s.id}&edit=true" class="btn btn--ghost btn--sm">Edit</a>
+            <button class="btn btn--ghost btn--sm archive-btn" data-id="${s.id}" data-current="${s.status}">${isArchived ? 'Unarchive' : 'Archive'}</button>
             <button class="btn btn--danger btn--sm delete-btn" data-id="${s.id}">Delete</button>
           </div>
         </td>
@@ -108,6 +128,32 @@ function renderTable(data) {
       if (cb.checked) selected.add(cb.dataset.id);
       else selected.delete(cb.dataset.id);
       updateBulkBar();
+    });
+  });
+
+  tbody.querySelectorAll('.archive-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const newStatus = btn.dataset.current === 'archived' ? 'published' : 'archived';
+      const label = newStatus === 'archived' ? 'Archive' : 'Unarchive';
+      showConfirmModal({
+        title: `${label} this story?`,
+        body: newStatus === 'archived'
+          ? 'The story will be hidden from the public view and default admin table.'
+          : 'The story will be restored to published status.',
+        confirmLabel: label,
+        onConfirm: async () => {
+          try {
+            await setStatus(id, newStatus);
+            const story = stories.find(s => s.id === id);
+            if (story) story.status = newStatus;
+            render();
+            showToast(`Story ${label.toLowerCase()}d.`, 'success');
+          } catch {
+            showToast(`${label} failed.`, 'error');
+          }
+        },
+      });
     });
   });
 
