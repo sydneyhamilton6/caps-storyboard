@@ -14,7 +14,11 @@
     grid-template-columns: 1fr 320px;
     align-items: start;
   }
-  .submit-sidebar { order: 0; }
+  .submit-sidebar {
+    order: 0;
+    position: sticky;
+    top: calc(4px + 60px + var(--sp-4));
+  }
 }
 
 .submit-form-section {
@@ -52,8 +56,7 @@
 }
 
 .submit-sidebar {
-  position: sticky;
-  top: calc(4px + 60px + var(--sp-4));
+  position: static;
 }
 
 .submit-sidebar__panel {
